@@ -13,11 +13,18 @@ namespace IMS.Infrastructure.Data
         public DbSet<Category> categories => Set<Category>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<LowStockAlert> LowStockAlerts => Set<LowStockAlert>();
 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<LowStockAlert>()
+                   .HasOne(a => a.Product)
+                   .WithMany()
+                   .HasForeignKey(a => a.ProductId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Transaction>()
                    .HasOne(t => t.Product)
@@ -47,6 +54,21 @@ namespace IMS.Infrastructure.Data
                    .WithMany()
                    .HasForeignKey("TransactionId")
                    .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Product>(entity =>
+            {
+                entity.Property(p => p.Price).HasPrecision(18, 2);
+            });
+
+            builder.Entity<Payment>(entity =>
+                {
+                    entity.Property(p => p.Amount).HasPrecision(18, 2);
+                });
+            builder.Entity<Transaction>(entity =>
+            {
+                entity.Property(t => t.TotalAmount).HasPrecision(18, 2);
+            });
+
 
 
 

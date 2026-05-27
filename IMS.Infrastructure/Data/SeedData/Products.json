@@ -1,0 +1,82 @@
+[
+  {
+    "Name": "Laptop",
+    "Description": "15-inch gaming laptop",
+    "Price": 999.99,
+    "QuantityInStock": 15,
+    "Supplier": "TechCorp",
+    "CategoryId": 3
+  },
+  {
+    "Name": "Smartphone",
+    "Description": "Latest Android smartphone",
+    "Price": 699.99,
+    "QuantityInStock": 30,
+    "Supplier": "TechCorp",
+    "CategoryId": 4
+  },
+  {
+    "Name": "Headphones",
+    "Description": "Noise-cancelling wireless headphones",
+    "Price": 149.99,
+    "QuantityInStock": 50,
+    "Supplier": "AudioMax",
+    "CategoryId": 4
+  },
+  {
+    "Name": "T-Shirt",
+    "Description": "Cotton crew-neck t-shirt",
+    "Price": 19.99,
+    "QuantityInStock": 100,
+    "Supplier": "FashionCo",
+    "CategoryId": 5
+  },
+  {
+    "Name": "Jeans",
+    "Description": "Slim-fit denim jeans",
+    "Price": 49.99,
+    "QuantityInStock": 60,
+    "Supplier": "FashionCo",
+    "CategoryId": 5
+  },
+  {
+    "Name": "Coffee Beans",
+    "Description": "Premium arabica coffee beans 1kg",
+    "Price": 12.99,
+    "QuantityInStock": 200,
+    "Supplier": "BrewMasters",
+    "CategoryId": 5
+  },
+  {
+    "Name": "Energy Drink",
+    "Description": "250ml energy drink can",
+    "Price": 3.99,
+    "QuantityInStock": 150,
+    "Supplier": "BuzzDrinks",
+    "CategoryId": 6
+  },
+  {
+    "Name": "Notebook",
+    "Description": "A5 ruled notebook 200 pages",
+    "Price": 5.99,
+    "QuantityInStock": 300,
+    "Supplier": "PaperMill",
+    "CategoryId": 6
+  },
+  {
+    "Name": "Pen Set",
+    "Description": "Pack of 10 ballpoint pens",
+    "Price": 8.99,
+    "QuantityInStock": 250,
+    "Supplier": "PaperMill",
+    "CategoryId": 6
+  },
+  {
+    "Name": "Hand Sanitizer",
+    "Description": "500ml antibacterial hand gel",
+    "Price": 4.99,
+    "QuantityInStock": 180,
+    "Supplier": "CleanCare",
+    "CategoryId": 7
+  }
+]
