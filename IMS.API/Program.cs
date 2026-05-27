@@ -1,3 +1,4 @@
+using IMS.API.Services;
 using IMS.Core.Entities;
 using IMS.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,8 +15,10 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddSingleton<CsvService>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefalutConnection")));
+options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -51,7 +54,20 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options
+        .JsonSerializerOptions
+        .ReferenceHandler = System
+        .Text
+        .Json
+        .Serialization
+        .ReferenceHandler
+        .IgnoreCycles;
+
+    }
+    );
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -80,6 +96,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-await RoleSedder.SeedRolesAsync(app.Services);
+await RoleSeeder.SeedRolesAsync(app.Services);
+await DataSeeder.SeedDataAsync(app.Services);
 
 app.Run();

@@ -4,22 +4,22 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace IMS.Infrastructure.Data
 {
-    public class RoleSedder
+    public class RoleSeeder
     {
         public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
         {
 
             using var scope = serviceProvider.CreateScope();
-            var roleMAnager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 
             string[] roles = { "Admin", "Manager", "Staff" };
 
             foreach (var role in roles)
             {
-                if (!await roleMAnager.RoleExistsAsync(role))
+                if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleMAnager.CreateAsync(new IdentityRole(role));
+                    await roleManager.CreateAsync(new IdentityRole(role));
 
                 }
             }
@@ -36,13 +36,13 @@ namespace IMS.Infrastructure.Data
                     Email = adminEmail,
                     EmailConfirmed = true
                 };
-            }
+                var result = await userManager.CreateAsync(adminUser, "Admin@123");
 
-            var result = await userManager.CreateAsync(adminUser, "Admin@123");
 
-            if (result.Succeeded)
-            {
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                if (result.Succeeded)
+                {
+                    await userManager.AddToRoleAsync(adminUser, "Admin");
+                }
             }
 
 
