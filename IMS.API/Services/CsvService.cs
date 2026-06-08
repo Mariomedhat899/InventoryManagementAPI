@@ -13,7 +13,7 @@ namespace IMS.API.Services
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
             csv.WriteField("Id");
             csv.WriteField("Name");
-            csv.WriteField("Descrption");
+            csv.WriteField("Description");
             csv.WriteField("Price");
             csv.WriteField("QuantityInStock");
             csv.WriteField("Supplier");
