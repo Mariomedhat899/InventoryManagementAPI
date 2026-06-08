@@ -1,11 +1,14 @@
 using IMS.API.Services;
+using IMS.Core.Contracts;
 using IMS.Core.Entities;
 using IMS.Infrastructure.Data;
+using IMS.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+
 
 
 
@@ -81,6 +84,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+
+
+builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
+builder.Services.AddScoped<IEmailService, SmtpEmailService>();
+builder.Services.Configure<NotificationSettings>(builder.Configuration.GetSection("NotificationSettings"));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,7 +105,17 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
-await RoleSeeder.SeedRolesAsync(app.Services);
-await DataSeeder.SeedDataAsync(app.Services);
+
+
+
+using (var seedScope = app.Services.CreateScope())
+{
+
+    var dbContext = seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await RoleSeeder.SeedRolesAsync(dbContext, seedScope.ServiceProvider);
+
+    await DataSeeder.SeedDataAsync(seedScope.ServiceProvider);
+}
+
 
 app.Run();

@@ -5,7 +5,7 @@
     "Price": 999.99,
     "QuantityInStock": 15,
     "Supplier": "TechCorp",
-    "CategoryId": 3
+    "CategoryName": "Electronics"
   },
   {
     "Name": "Smartphone",
@@ -13,7 +13,7 @@
     "Price": 699.99,
     "QuantityInStock": 30,
     "Supplier": "TechCorp",
-    "CategoryId": 4
+    "CategoryName": "Electronics"
   },
   {
     "Name": "Headphones",
@@ -21,7 +21,7 @@
     "Price": 149.99,
     "QuantityInStock": 50,
     "Supplier": "AudioMax",
-    "CategoryId": 4
+    "CategoryName": "Electronics"
   },
   {
     "Name": "T-Shirt",
@@ -29,7 +29,7 @@
     "Price": 19.99,
     "QuantityInStock": 100,
     "Supplier": "FashionCo",
-    "CategoryId": 5
+    "CategoryName": "Clothing"
   },
   {
     "Name": "Jeans",
@@ -37,7 +37,7 @@
     "Price": 49.99,
     "QuantityInStock": 60,
     "Supplier": "FashionCo",
-    "CategoryId": 5
+    "CategoryName": "Clothing"
   },
   {
     "Name": "Coffee Beans",
@@ -45,7 +45,7 @@
     "Price": 12.99,
     "QuantityInStock": 200,
     "Supplier": "BrewMasters",
-    "CategoryId": 5
+    "CategoryName": "Food & Beverages"
   },
   {
     "Name": "Energy Drink",
@@ -53,7 +53,7 @@
     "Price": 3.99,
     "QuantityInStock": 150,
     "Supplier": "BuzzDrinks",
-    "CategoryId": 6
+    "CategoryName": "Food & Beverages"
   },
   {
     "Name": "Notebook",
@@ -61,7 +61,7 @@
     "Price": 5.99,
     "QuantityInStock": 300,
     "Supplier": "PaperMill",
-    "CategoryId": 6
+    "CategoryName": "Office Supplies"
   },
   {
     "Name": "Pen Set",
@@ -69,7 +69,7 @@
     "Price": 8.99,
     "QuantityInStock": 250,
     "Supplier": "PaperMill",
-    "CategoryId": 6
+    "CategoryName": "Office Supplies"
   },
   {
     "Name": "Hand Sanitizer",
@@ -77,6 +77,6 @@
     "Price": 4.99,
     "QuantityInStock": 180,
     "Supplier": "CleanCare",
-    "CategoryId": 7
+    "CategoryName": "Health & Beauty"
   }
 ]

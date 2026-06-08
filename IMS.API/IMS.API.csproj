@@ -4,10 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>3746ec4c-ff25-44f1-8235-94d8fb6bffb6</UserSecretsId>
   </PropertyGroup>
 	<ItemGroup>
-		<None Include="..\IMS.Infrastructure\Data\SeedData\**\*"
-	  Link="Data\SeedData\%(Filename)%(Extension)">
+		<None Include="..\IMS.Infrastructure\Data\SeedData\**\*" Link="Data\SeedData\%(Filename)%(Extension)">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>

@@ -11,14 +11,32 @@ namespace IMS.API.Services
         {
             using var writer = new StringWriter();
             using var csv = new CsvWriter(writer, CultureInfo.InvariantCulture);
-
-            csv.WriteHeader<Product>();
+            csv.WriteField("Id");
+            csv.WriteField("Name");
+            csv.WriteField("Descrption");
+            csv.WriteField("Price");
+            csv.WriteField("QuantityInStock");
+            csv.WriteField("Supplier");
+            csv.WriteField("CategoryId");
+            csv.WriteField("CreatedAt");
+            csv.WriteField("LastUpdatedAt");
             csv.NextRecord();
+
+
 
             foreach (var product in products)
             {
-                csv.WriteRecord(product);
+                csv.WriteField(product.Id);
+                csv.WriteField(product.Name);
+                csv.WriteField(product.Description);
+                csv.WriteField(product.Price);
+                csv.WriteField(product.QuantityInStock);
+                csv.WriteField(product.Supplier);
+                csv.WriteField(product.CategoryId);
+                csv.WriteField(product.CreatedAt);
+                csv.WriteField(product.LastUpdatedAt);
                 csv.NextRecord();
+
             }
             ;
 
