@@ -1,9 +1,12 @@
 ﻿using IMS.API.Models.TransactionsDtos;
+using IMS.Core.Contracts;
 using IMS.Core.Entities;
 using IMS.Infrastructure.Data;
+using IMS.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 
@@ -11,8 +14,13 @@ namespace IMS.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionsController(ApplicationDbContext _context) : ControllerBase
+    public class TransactionsController(ApplicationDbContext _context
+        , IEmailService emailService,
+        IOptions<NotificationSettings> notificationSettings) : ControllerBase
     {
+
+        private readonly IEmailService _emailService = emailService;
+        private readonly NotificationSettings _notificationSettings = notificationSettings.Value;
 
         [HttpGet]
         [Authorize(Roles = "Admin,Manager")]
@@ -63,6 +71,23 @@ namespace IMS.API.Controllers
                     return BadRequest("Insufficient stock for this sale!!");
 
                 product.QuantityInStock -= model.Quantity;
+                if (product.QuantityInStock <= _notificationSettings.LowStockThreshold)
+                {
+                    var subject = $"Low Stock Alert: {product.Name}";
+                    var body = $"Product '{product.Name}'(ID: {product.Id}) has low stock. \n" +
+                               $"Current quantity: {product.QuantityInStock}\n" +
+                               $"Threshold: {_notificationSettings.LowStockThreshold}\n" +
+                               $"Please restock this item soon";
+
+                    try
+                    {
+                        await _emailService.SendEmailAsync(_notificationSettings.AdminEmail, subject, body);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Failed to send low stock email: {ex.Message}");
+                    }
+                }
             }
             else
             {

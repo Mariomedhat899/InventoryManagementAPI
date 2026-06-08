@@ -37,22 +37,55 @@ namespace IMS.Infrastructure.Data
 
             await context.SaveChangesAsync();
 
-
+            var categoryMap = await context.categories
+                .ToDictionaryAsync(c => c.Name!, c => c.Id);
 
             var productPath = Path.Combine(AppContext.BaseDirectory, "Data", "SeedData", "Products.json");
 
             var productsData = await File.ReadAllTextAsync(productPath);
+            var productOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
 
-            var products = JsonSerializer.Deserialize<List<Product>>(productsData);
+            var products = JsonSerializer.Deserialize<List<ProductSeedDto>>(productsData, productOptions);
 
             if (products is null) return;
+            foreach (var product in products)
+            {
+                if (!categoryMap.TryGetValue(product.CategoryName, out int categoryID))
+                    continue;
 
-            await context.Products.AddRangeAsync(products);
+                context.Products.Add(new Product
+                {
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    QuantityInStock = product.QuantityInStock,
+                    Supplier = product.Supplier,
+                    CategoryId = categoryID,
+                });
+
+            }
+            ;
+
 
             await context.SaveChangesAsync();
 
 
 
         }
+        private class ProductSeedDto
+        {
+
+            public string Name { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public decimal Price { get; set; }
+            public int QuantityInStock { get; set; }
+            public string Supplier { get; set; } = string.Empty;
+            public string CategoryName { get; set; } = string.Empty;
+
+        }
     }
 }
+
