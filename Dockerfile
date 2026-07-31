@@ -18,8 +18,8 @@ WORKDIR /app
 EXPOSE 8080
 
 ENV ASPNETCORE_ENVIRONMENT=Production \
-    ASPNETCORE_URLS=http://+:8080 \
-    DATABASE_PROVIDER=Sqlite
+    DATABASE_PROVIDER=Sqlite \
+    ASPNETCORE_URLS=http://+:8080
 
 COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "IMS.API.dll"]
