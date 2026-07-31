@@ -9,19 +9,29 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
-
-
-
-
-
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<CsvService>();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                       ?? Environment.GetEnvironmentVariable("CONNECTION_STRING")
+                       ?? "Server=(local);Database=IMS_DB;Trusted_Connection=True;TrustServerCertificate=True;";
+var databaseProvider = (builder.Configuration["DatabaseProvider"] 
+                        ?? Environment.GetEnvironmentVariable("DATABASE_PROVIDER")
+                        ?? "SqlServer").Trim();
+
+if (string.Equals(databaseProvider, "Sqlite", StringComparison.OrdinalIgnoreCase))
+{
+    var dbPath = Path.Combine(AppContext.BaseDirectory, "ims.db");
+    builder.Services.AddDbContext<ApplicationDbContext>(
+        options => options.UseSqlite($"Data Source={dbPath}"));
+}
+else
+{
+    builder.Services.AddDbContext<ApplicationDbContext>(
+        options => options.UseSqlServer(connectionString));
+}
+
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -33,7 +43,6 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.User.RequireUniqueEmail = true;
 }).AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
-
 
 var jwtOptions = builder.Configuration.GetSection("JwtOptions");
 
@@ -62,12 +71,7 @@ builder.Services.AddControllers()
     {
         options
         .JsonSerializerOptions
-        .ReferenceHandler = System
-        .Text
-        .Json
-        .Serialization
-        .ReferenceHandler
-        .IgnoreCycles;
+        .ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 
     }
     );
@@ -78,13 +82,19 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowALl", policy =>
+    options.AddPolicy("AllowIMSWebClients", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        if (builder.Environment.IsDevelopment())
+        {
+            policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+        else
+        {
+            var origins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+            policy.WithOrigins(origins).AllowAnyMethod().AllowAnyHeader();
+        }
     });
 });
-
-
 
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 builder.Services.AddScoped<IEmailService, SmtpEmailService>();
@@ -98,14 +108,23 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHsts();
+}
 
-app.UseHttpsRedirection();
-app.UseCors("AllowAll");
+app.UseCors("AllowIMSWebClients");
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
-
 
 
 using (var seedScope = app.Services.CreateScope())
@@ -117,5 +136,8 @@ using (var seedScope = app.Services.CreateScope())
     await DataSeeder.SeedDataAsync(seedScope.ServiceProvider);
 }
 
+
+
+app.MapFallbackToFile("index.html");
 
 app.Run();

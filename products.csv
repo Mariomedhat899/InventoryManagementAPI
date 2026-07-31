@@ -1,0 +1,21 @@
+Id,Name,Description,Price,QuantityInStock,Supplier,CategoryId
+1,Wireless Mouse,Ergonomic wireless mouse with 2.4GHz connectivity,29.99,150,TechGear Inc,1
+2,USB-C Hub,7-in-1 USB-C hub with HDMI and card reader,49.99,85,ConnectAll Ltd,1
+3,Office Chair,Adjustable lumbar support mesh office chair,199.99,30,ComfortSeating Co,2
+4,Standing Desk,Electric height-adjustable standing desk 140x70cm,449.99,12,WorkSpace Pro,2
+5,LED Desk Lamp,Dimmable LED desk lamp with USB charging port,34.99,200,BrightLight GmbH,3
+6,Monitor 27" IPS,27-inch 4K IPS monitor with HDR support,379.99,45,DisplayMax Corp,1
+7,Keyboard Mechanical,Mechanical keyboard RGB backlit blue switches,79.99,120,TechGear Inc,1
+8,Webcam HD 1080p,Full HD webcam with built-in microphone,59.99,95,ViewClear Tech,1
+9,Packaging Boxes Large,Cardboard shipping boxes 40x30x30cm pack of 50,24.99,500,PackRight Supply,4
+10,Stretch Wrap Film,Pallet stretch wrap film 500mm x 300m,18.50,300,PackRight Supply,4
+11,Shipping Labels,Thermal shipping labels 100x150mm roll of 1000,15.99,400,LabelPro Systems,4
+12,Packing Tape Clear,Acrylic packing tape 48mm x 100m 6-pack,12.99,600,PackRight Supply,4
+13,Printer Paper A4,A4 white copy paper 80gsm ream of 500 sheets,6.99,1000,OfficeBasics Ltd,5
+14,Ballpoint Pens Blue,Ballpoint pens blue ink pack of 50,9.99,800,OfficeBasics Ltd,5
+15,Sticky Notes 3x3,Sticky notes 3x3 inches yellow pad of 100 sheets,3.49,1200,OfficeBasics Ltd,5
+16,Whiteboard 90x60,Magnetic dry-erase whiteboard with markers,45.99,40,OfficeBasics Ltd,5
+17,Air Purifier,HEPA air purifier for rooms up to 40m2,159.99,25,CleanAir Solutions,3
+18,Surge Protector,8-outlet surge protector with USB ports 2m cable,22.99,180,PowerSafe Electric,3
+19,Network Cable Cat6,Ethernet cable Cat6 5m blue,8.99,500,NetLink Cables,1
+20,Label Printer,Thermal label printer for shipping and barcode labels,89.99,35,LabelPro Systems,4
