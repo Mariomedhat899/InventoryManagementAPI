@@ -1,0 +1,7 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "dotnet IMS.API/bin/Release/net8.0/publish/IMS.API.dll"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
