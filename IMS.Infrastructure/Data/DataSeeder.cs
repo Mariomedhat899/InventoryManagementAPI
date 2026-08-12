@@ -22,7 +22,25 @@ namespace IMS.Infrastructure.Data
             if (context.Database.GetPendingMigrationsAsync().GetAwaiter().GetResult().Any())
                 await context.Database.MigrateAsync();
 
-            if (await context.categories.AnyAsync()) return;
+            if (await context.categories.AnyAsync())
+            {
+                if (!await context.ApiKeys.AnyAsync())
+                {
+                    var defaultApiKey = new ApiKey
+                    {
+                        Key = "IMS-Demo-Key-2026",
+                        Owner = "Demo/Resume",
+                        ExpiresAt = DateTime.UtcNow.AddMonths(1),
+                        IsActive = true,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    context.ApiKeys.Add(defaultApiKey);
+                    await context.SaveChangesAsync();
+                }
+
+                return;
+            }
 
             var categorypath = Path.Combine(AppContext.BaseDirectory, "Data", "SeedData", "categories.json");
 
@@ -73,7 +91,20 @@ namespace IMS.Infrastructure.Data
             await context.SaveChangesAsync();
 
 
+            if (!await context.ApiKeys.AnyAsync())
+            {
+                var defaultApiKey = new ApiKey
+                {
+                    Key = "IMS-Demo-Key-2026",
+                    Owner = "Demo/Resume",
+                    ExpiresAt = DateTime.UtcNow.AddMonths(1),
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
 
+                context.ApiKeys.Add(defaultApiKey);
+                await context.SaveChangesAsync();
+            }
         }
         private class ProductSeedDto
         {
