@@ -14,6 +14,7 @@ namespace IMS.Infrastructure.Data
         public DbSet<Transaction> Transactions => Set<Transaction>();
         public DbSet<Payment> Payments => Set<Payment>();
         public DbSet<LowStockAlert> LowStockAlerts => Set<LowStockAlert>();
+        public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
 
         protected override void OnModelCreating(ModelBuilder builder)
