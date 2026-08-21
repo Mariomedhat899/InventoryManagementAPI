@@ -21,6 +21,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSingleton<CsvService>();
 
+var secretsPath = Path.Combine(builder.Environment.ContentRootPath, "secrets.json");
+if (File.Exists(secretsPath))
+{
+    builder.Configuration.AddJsonFile(secretsPath, optional: false, reloadOnChange: true);
+}
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -79,9 +85,12 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowALl", policy =>
+    options.AddPolicy("_corsPolicy", policy =>
     {
-        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        policy.WithOrigins("https://imsapp.runasp.net", "http://localhost:4200")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
     });
 });
 
@@ -105,7 +114,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 app.UseStaticFiles();
-app.UseCors("AllowAll");
+app.UseCors("_corsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

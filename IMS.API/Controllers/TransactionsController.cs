@@ -59,16 +59,16 @@ namespace IMS.API.Controllers
             if (model.Quantity <= 0) return BadRequest("Quantity must be greater than 0!!");
 
             var type = model.Type.ToLowerInvariant();
-            if ((type != "sale" && type != "purchase"))
-                return BadRequest("Type must be 'Sale' or 'Purchase'!!");
+            if ((type != "payment" && type != "receipt"))
+                return BadRequest("Type must be 'Payment' or 'Receipt'!!");
 
 
 
 
-            if (type == "sale")
+            if (type == "payment")
             {
                 if (product.QuantityInStock < model.Quantity)
-                    return BadRequest("Insufficient stock for this sale!!");
+                    return BadRequest("Insufficient stock for this payment!!");
 
                 product.QuantityInStock -= model.Quantity;
                 if (product.QuantityInStock <= _notificationSettings.LowStockThreshold)

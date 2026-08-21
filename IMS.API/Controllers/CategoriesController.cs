@@ -87,8 +87,14 @@ namespace IMS.API.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
-            var category = await _context.categories.FindAsync(id);
+            var category = await _context.categories
+                .Include(c => c.Products)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
             if (category is null) return NotFound();
+
+            if (category.Products != null && category.Products.Any())
+                return BadRequest("Cannot delete category because it contains products.");
 
             _context.categories.Remove(category);
             await _context.SaveChangesAsync();

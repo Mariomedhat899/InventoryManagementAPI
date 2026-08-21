@@ -10,6 +10,6 @@
 
         public DateTime PaymentDate { get; set; } = DateTime.UtcNow;
 
-        public string Status { get; set; } = "Pending";
+        public string Status { get; set; } = "pending";
     }
 }

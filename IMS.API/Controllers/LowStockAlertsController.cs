@@ -48,7 +48,7 @@ namespace IMS.API.Controllers
         {
             var alerts = await _context.LowStockAlerts
                 .Include(a => a.Product)
-                .Where(a => !a.IsResolved && a.Product != null && a.Product.QuantityInStock <= a.Threshold)
+                .Where(a => !a.IsResolved && a.Product != null)
                 .Select(a => new
                 {
                     a.Id,

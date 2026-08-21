@@ -94,17 +94,9 @@ namespace IMS.API.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
-
         public async Task<IActionResult> DeletePaymentAsync(int id)
         {
-
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment is null) return NotFound($"No Payment With Id: {id}");
-
-            _context.Payments.Remove(payment);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return StatusCode(StatusCodes.Status403Forbidden, "Payment deletion is disabled.");
         }
 
         [HttpPut("{id}")]
@@ -116,6 +108,8 @@ namespace IMS.API.Controllers
 
             payment.Status = model.Status;
             payment.PaymentMethod = model.PaymentMethod;
+            payment.TransactionReference = model.TransactionReference;
+            payment.Amount = model.Amount;
 
             _context.Payments.Update(payment);
             await _context.SaveChangesAsync();
