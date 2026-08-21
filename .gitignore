@@ -363,3 +363,11 @@ MigrationBackup/
 FodyWeavers.xsd
 # Hermes Agent workspace
 .hermes/
+
+# Secrets
+secrets.json
+*.secret
+appsettings.json
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.example.json

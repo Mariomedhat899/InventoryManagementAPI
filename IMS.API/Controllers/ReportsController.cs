@@ -21,23 +21,23 @@ namespace IMS.API.Controllers
 
             var totalProducts = await _context.Products.CountAsync();
 
-            var salesCount = await _context.Transactions
-           .CountAsync(t => t.Type == "sale");
+            var paymentsCount = await _context.Transactions
+           .CountAsync(t => t.Type == "payment");
 
-            var salesRevenue = await _context.Transactions
-                .Where(t => t.Type == "sale")
+            var paymentsRevenue = await _context.Transactions
+                .Where(t => t.Type == "payment")
                 .SumAsync(t => t.TotalAmount);
 
-            var PurchaseCount = await _context.Transactions
-                .CountAsync(t => t.Type == "purchase");
+            var receiptsCount = await _context.Transactions
+                .CountAsync(t => t.Type == "receipt");
 
 
-            var purchesAmount = await _context.Transactions
-                .Where(t => t.Type == "purchase")
+            var receiptsAmount = await _context.Transactions
+                .Where(t => t.Type == "receipt")
                 .SumAsync(t => t.TotalAmount);
 
             var topProducts = await _context.Transactions
-                .Where(t => t.Type == "sale")
+                .Where(t => t.Type == "payment")
                 .GroupBy(t => new { t.ProductId, t.Product!.Name })
                 .Select(g => new TopProductDto
                 {
@@ -54,15 +54,15 @@ namespace IMS.API.Controllers
             {
                 TotalStockValue = totalStockValue,
                 TotalProducts = totalProducts,
-                Sales = new ReportSummaryDto
+                Payments = new ReportSummaryDto
                 {
-                    Count = salesCount,
-                    TotalAmount = salesRevenue
+                    Count = paymentsCount,
+                    TotalAmount = paymentsRevenue
                 },
-                Purchases = new ReportSummaryDto
+                Receipts = new ReportSummaryDto
                 {
-                    Count = PurchaseCount,
-                    TotalAmount = purchesAmount
+                    Count = receiptsCount,
+                    TotalAmount = receiptsAmount
                 },
                 TopSellingProducts = topProducts
 

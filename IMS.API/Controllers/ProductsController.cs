@@ -41,31 +41,24 @@ namespace IMS.API.Controllers
 
             foreach (var product in products)
             {
-                if (product.Id > 0)
+                if (string.IsNullOrWhiteSpace(product.Name)) continue;
+
+                var existingProduct = await _context.Products
+                    .FirstOrDefaultAsync(p => p.Name == product.Name);
+
+                if (existingProduct != null)
                 {
-                    var exsistingProduct = await _context.Products.FindAsync(product.Id);
-
-                    if (exsistingProduct != null)
-                    {
-                        exsistingProduct.Name = product.Name;
-                        exsistingProduct.Description = product.Description;
-                        exsistingProduct.Price = product.Price;
-                        exsistingProduct.QuantityInStock = product.QuantityInStock;
-                        exsistingProduct.Supplier = product.Supplier;
-                        exsistingProduct.CategoryId = product.CategoryId;
-                        exsistingProduct.LastUpdatedAt = DateTime.UtcNow;
-                        updatedCount++;
-
-                    }
-                    else
-                    {
-                        product.Id = 0;
-                        _context.Products.Add(product);
-                        addedCount++;
-                    }
+                    existingProduct.Description = product.Description;
+                    existingProduct.Price = product.Price;
+                    existingProduct.QuantityInStock += product.QuantityInStock;
+                    existingProduct.Supplier = product.Supplier;
+                    existingProduct.CategoryId = product.CategoryId;
+                    existingProduct.LastUpdatedAt = DateTime.UtcNow;
+                    updatedCount++;
                 }
                 else
                 {
+                    product.Id = 0;
                     _context.Products.Add(product);
                     addedCount++;
                 }
@@ -177,6 +170,22 @@ namespace IMS.API.Controllers
         {
             var product = await _context.Products.FindAsync(id);
             if (product is null) return NotFound();
+
+            var hasTransactions = await _context.Transactions.AnyAsync(t => t.ProductId == id);
+            if (hasTransactions)
+            {
+                var blocking = await _context.Transactions
+                    .Where(t => t.ProductId == id)
+                    .OrderByDescending(t => t.Date)
+                    .Select(t => new { t.Id, t.Type, t.TotalAmount, t.Date })
+                    .Take(5)
+                    .ToListAsync();
+
+                var details = string.Join("; ", blocking.Select(t =>
+                    $"#{t.Id} {t.Type} ${t.TotalAmount} {t.Date:yyyy-MM-dd}"));
+
+                return BadRequest(new { message = $"Cannot delete this product because it has linked transactions. Blocking: {details}" });
+            }
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();

@@ -1,7 +1,9 @@
 ﻿using IMS.API.Models.AuthDtos;
 using IMS.Core.Entities;
+using IMS.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -14,41 +16,11 @@ namespace IMS.API.Controllers
     public class AuthController(
         UserManager<ApplicationUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration
+        IConfiguration configuration,
+        ApplicationDbContext dbContext
         ) : ControllerBase
     {
-
-        [HttpPost("Register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto model)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-            var user = new ApplicationUser
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                EmailConfirmed = true
-
-            };
-            var result = await userManager.CreateAsync(user, model.Password);
-
-            if ((!result.Succeeded))
-            {
-                return BadRequest(result.Errors);
-
-            }
-
-            var role = string.IsNullOrEmpty(model.Role) ? "Staff" : model.Role;
-            if (await roleManager.RoleExistsAsync(role))
-            {
-                await userManager.AddToRoleAsync(user, role);
-            }
-
-            return Ok(new { Message = "User Registered Successfully", userId = user.Id });
-        }
-
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         [HttpPost("Login")]
 
@@ -63,6 +35,17 @@ namespace IMS.API.Controllers
             if (user is null || !await userManager.CheckPasswordAsync(user, model.Password))
             {
                 return Unauthorized(new { Message = "Invalid email or password" });
+            }
+
+            // Block login if the user's newest API key is expired
+            var newestKey = await _dbContext.ApiKeys
+                .Where(k => k.Owner == user.UserName)
+                .OrderByDescending(k => k.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (newestKey is not null && newestKey.ExpiresAt <= DateTime.UtcNow)
+            {
+                return Unauthorized(new { Message = "Your API key has expired. Contact an administrator." });
             }
             var token = await GenerateJwtToken(user);
             var roles = await userManager.GetRolesAsync(user);

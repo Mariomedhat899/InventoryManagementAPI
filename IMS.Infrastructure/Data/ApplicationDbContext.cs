@@ -16,7 +16,6 @@ namespace IMS.Infrastructure.Data
         public DbSet<LowStockAlert> LowStockAlerts => Set<LowStockAlert>();
         public DbSet<ApiKey> ApiKeys => Set<ApiKey>();
 
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -72,8 +71,15 @@ namespace IMS.Infrastructure.Data
 
 
 
+        }
 
-
+        public bool CanAccessUser(ApplicationUser requester, string targetUserId)
+        {
+            if (requester is null || string.IsNullOrWhiteSpace(targetUserId)) return false;
+            if (requester.Id == targetUserId) return true;
+            if (requester.UserName == "admin") return true;
+            if (requester.NormalizedUserName == "ADMIN") return true;
+            return false;
         }
     }
 }
