@@ -23,68 +23,28 @@ namespace IMS.Infrastructure.Data
                 if (!await roleManager.RoleExistsAsync(role))
                 {
                     await roleManager.CreateAsync(new IdentityRole(role));
-
                 }
             }
 
-            var adminEmail = "MarioMedhat899@gmail.com";
+            var superAdminEmail = "MarioMedhat899@gmail.com";
 
-            var adminUser = await userManager.FindByEmailAsync(adminEmail);
+            var adminUser = await userManager.FindByEmailAsync(superAdminEmail);
 
             if (adminUser is null)
             {
                 adminUser = new ApplicationUser
                 {
                     UserName = "admin",
-                    Email = adminEmail,
+                    Email = superAdminEmail,
                     EmailConfirmed = true
                 };
                 var result = await userManager.CreateAsync(adminUser, "Admin@123");
-
 
                 if (result.Succeeded)
                 {
                     await userManager.AddToRoleAsync(adminUser, "Admin");
                 }
             }
-            var managerEmail = "Manager@test.com";
-            var managerUser = await userManager.FindByEmailAsync(managerEmail);
-            if (managerUser is null)
-            {
-                managerUser = new ApplicationUser
-                {
-                    UserName = "manager",
-                    Email = managerEmail,
-                    EmailConfirmed = true
-                };
-
-                var managerResult = await userManager.CreateAsync(managerUser, "Manager@123");
-                if (managerResult.Succeeded)
-                {
-                    await userManager.AddToRoleAsync(managerUser, "Manager");
-                }
-            }
-
-
-            var staffEmail = "staff@test.com";
-            var staffUser = await userManager.FindByEmailAsync(staffEmail);
-            if (staffUser is null)
-            {
-                staffUser = new ApplicationUser
-                {
-                    UserName = "staff",
-                    Email = staffEmail,
-                    EmailConfirmed = true
-                };
-                var staffResult = await userManager.CreateAsync(staffUser, "Staff@123");
-                if (staffResult.Succeeded) await userManager.AddToRoleAsync(staffUser, "Staff");
-            }
-
-
-
-
-
         }
-
     }
 }
