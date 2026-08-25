@@ -43,6 +43,9 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 
 
 var jwtOptions = builder.Configuration.GetSection("JwtOptions");
+var secretKey = jwtOptions["SecretKey"] ?? throw new InvalidOperationException("JwtOptions:SecretKey is missing");
+var issuer = jwtOptions["Issuer"] ?? "IMS";
+var audience = jwtOptions["Audience"] ?? "IMS";
 
 builder.Services.AddAuthentication(options =>
 {
@@ -56,10 +59,10 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidIssuer = jwtOptions["Issuer"],
-        ValidAudience = jwtOptions["Audience"],
+        ValidIssuer = issuer,
+        ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey
-        (Encoding.UTF8.GetBytes(jwtOptions["SecretKey"] ?? throw new InvalidOperationException("JwtOptions.SecretKey is missing")))
+        (Encoding.UTF8.GetBytes(secretKey))
     };
 });
 
@@ -87,7 +90,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("_corsPolicy", policy =>
     {
-        policy.WithOrigins("https://imsapp.runasp.net", "http://localhost:4200")
+        policy.SetIsOriginAllowed(origin =>
+        {
+            if (origin.Contains("trycloudflare.com")) return true;
+            if (origin.Contains("localhost")) return true;
+            return origin == "https://imsapp.runasp.net" || origin == "http://localhost:4200";
+        })
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -123,8 +131,9 @@ app.MapFallbackToFile("index.html");
 using (var seedScope = app.Services.CreateScope())
 {
     var dbContext = seedScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    await RoleSeeder.SeedRolesAsync(dbContext, seedScope.ServiceProvider);
+    await dbContext.Database.MigrateAsync();
 
+    await RoleSeeder.SeedRolesAsync(dbContext, seedScope.ServiceProvider);
     await DataSeeder.SeedDataAsync(seedScope.ServiceProvider);
 }
 

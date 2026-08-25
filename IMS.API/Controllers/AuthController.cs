@@ -87,17 +87,18 @@ namespace IMS.API.Controllers
             }
             var jwtSettings = configuration.GetSection("JwtOptions");
             var secretKey = jwtSettings["SecretKey"] ?? throw new InvalidOperationException("JwtOptions:SecretKey is not configured.");
+            var issuer = jwtSettings["Issuer"] ?? "IMS";
+            var audience = jwtSettings["Audience"] ?? "IMS";
             var Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
             var creds = new SigningCredentials(Key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
-                issuer: jwtSettings["Issuer"],
-                audience: jwtSettings["Audience"],
+                issuer: issuer,
+                audience: audience,
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(int.Parse(jwtSettings["ExpiryMinutes"] ?? "60")),
                 signingCredentials: creds
-
-                );
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
