@@ -1,6 +1,6 @@
 # IMS — Inventory Management System
 
-A full-featured **ASP.NET Core 8 Web API** for inventory management, built with **Clean Architecture**, **JWT authentication**, **role-based authorization**, **CSV import/export**, and **automated email notifications** for low stock alerts.
+A full-featured **ASP.NET Core 10 Web API** for inventory management, built with **Clean Architecture**, **JWT authentication**, **role-based authorization**, **CSV import/export**, and **automated email notifications** for low stock alerts.
 
 ---
 
@@ -22,9 +22,9 @@ This keeps the domain layer independent of frameworks and infrastructure concern
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | ASP.NET Core 8 (.NET 8) |
-| ORM | Entity Framework Core 8 |
-| Database | SQL Server (LocalDB) |
+| Framework | ASP.NET Core 10 (.NET 10) |
+| ORM | Entity Framework Core 10 |
+| Database | SQL Server Express / Remote DB |
 | Auth | ASP.NET Identity + JWT Bearer |
 | Role System | Admin, Manager, Staff |
 | Email | SMTP via System.Net.Mail (Gmail) |
@@ -156,7 +156,7 @@ This keeps the domain layer independent of frameworks and infrastructure concern
 ## Getting Started
 
 ### Prerequisites
-- .NET 8 SDK
+- .NET 10 SDK
 - SQL Server (LocalDB or full instance)
 - Gmail App Password (for email notifications)
 
@@ -171,7 +171,7 @@ This keeps the domain layer independent of frameworks and infrastructure concern
 2. **Configure the database connection** in `IMS.API/appsettings.json`:
    ```json
    "ConnectionStrings": {
-     "DefaultConnection": "Server=(localdb)\\MSSQLLocalDB;Database=IMS_DB;Trusted_Connection=True;TrustServerCertificate=True"
+     "DefaultConnection": "Server=(local)\\SQLEXPRESS;Database=IMS_DB;Trusted_Connection=True;TrustServerCertificate=True"
    }
    ```
 
