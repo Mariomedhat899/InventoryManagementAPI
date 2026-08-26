@@ -31,7 +31,7 @@
   <ItemGroup>
     <None Update="secrets.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
     </None>
   </ItemGroup>
 
