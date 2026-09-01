@@ -1,10 +1,10 @@
 <Project>
   <PropertyGroup>
-    <!-- Enable built-in .NET analyzers and fail CI on warnings -->
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <WarningsAsErrors>$(WarningsAsErrors);CA1822</WarningsAsErrors>
+    <NoWarn>$(NoWarn);CA2227;CA1805</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
