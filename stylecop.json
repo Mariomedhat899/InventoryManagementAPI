@@ -1,0 +1,12 @@
+{
+  "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/documentation/StyleCop.ruleset.json",
+  "rules": {
+    "SA1633": { "severity": "none" },
+    "SA1200": { "severity": "none" },
+    "SA1516": { "severity": "none" },
+    "SA1505": { "severity": "none" },
+    "SA0001": { "severity": "none" },
+    "CA1805": { "severity": "none" },
+    "CA2227": { "severity": "none" }
+  }
+}
