@@ -8,6 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <!-- StyleCop removed to unblock CI; re-add after codebase is formatted for it -->
+    <!-- StyleCop removed to unblock CI; re-enable after codebase is formatted -->
   </ItemGroup>
 </Project>
