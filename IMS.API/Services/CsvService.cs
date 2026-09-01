@@ -43,18 +43,20 @@ namespace IMS.API.Services
             return writer.ToString();
         }
 
-        public List<Product> ImportProductsFromCsv(string csvContent)
+        public List<ProductImportRow> ImportProductsFromCsv(string csvContent)
         {
             using var reader = new StringReader(csvContent);
-            using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 IgnoreReferences = true,
+                HeaderValidated = null,
+                MissingFieldFound = null
             };
 
-            csv.Context.RegisterClassMap<ProductImportMap>();
+            using var csv = new CsvReader(reader, config);
+            csv.Context.RegisterClassMap<ProductImportRowMap>();
 
-            return csv.GetRecords<Product>().ToList();
+            return csv.GetRecords<ProductImportRow>().ToList();
         }
     }
 }

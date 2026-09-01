@@ -35,31 +35,55 @@ namespace IMS.API.Controllers
             using var reader = new StreamReader(file.OpenReadStream());
             var csvContent = await reader.ReadToEndAsync();
 
-            var products = _csv.ImportProductsFromCsv(csvContent);
+            var rows = _csv.ImportProductsFromCsv(csvContent);
             int addedCount = 0;
             int updatedCount = 0;
 
-            foreach (var product in products)
+            foreach (var row in rows)
             {
-                if (string.IsNullOrWhiteSpace(product.Name)) continue;
+                if (string.IsNullOrWhiteSpace(row.Name)) continue;
+
+                var categoryId = 0;
+                if (!string.IsNullOrWhiteSpace(row.Category))
+                {
+                    var category = await _context.categories.FirstOrDefaultAsync(c => c.Name == row.Category);
+                    if (category == null)
+                    {
+                        category = new IMS.Core.Entities.Category { Name = row.Category, Description = row.Category };
+                        _context.categories.Add(category);
+                        await _context.SaveChangesAsync();
+                        categoryId = category.Id;
+                    }
+                    else
+                    {
+                        categoryId = category.Id;
+                    }
+                }
 
                 var existingProduct = await _context.Products
-                    .FirstOrDefaultAsync(p => p.Name == product.Name);
+                    .FirstOrDefaultAsync(p => p.Name == row.Name);
 
                 if (existingProduct != null)
                 {
-                    existingProduct.Description = product.Description;
-                    existingProduct.Price = product.Price;
-                    existingProduct.QuantityInStock += product.QuantityInStock;
-                    existingProduct.Supplier = product.Supplier;
-                    existingProduct.CategoryId = product.CategoryId;
+                    existingProduct.Description = row.Description;
+                    existingProduct.Price = row.Price;
+                    existingProduct.QuantityInStock += row.QuantityInStock;
+                    existingProduct.Supplier = row.Supplier;
+                    if (categoryId > 0) existingProduct.CategoryId = categoryId;
                     existingProduct.LastUpdatedAt = DateTime.UtcNow;
                     updatedCount++;
                 }
                 else
                 {
-                    product.Id = 0;
-                    _context.Products.Add(product);
+                    _context.Products.Add(new Product
+                    {
+                        Name = row.Name,
+                        Description = row.Description,
+                        Price = row.Price,
+                        QuantityInStock = row.QuantityInStock,
+                        Supplier = row.Supplier,
+                        CategoryId = categoryId
+                    });
                     addedCount++;
                 }
             }
@@ -89,6 +113,7 @@ namespace IMS.API.Controllers
                     QuantityInStock = P.QuantityInStock,
                     Supplier = P.Supplier,
                     CategoryId = P.CategoryId,
+                    CategoryName = P.Category != null ? P.Category.Name : null,
                     CreatedAt = P.CreatedAt,
                     UpdatedAt = P.LastUpdatedAt
                 }).ToListAsync();

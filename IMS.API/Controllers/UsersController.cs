@@ -321,12 +321,6 @@ public class UsersController : ControllerBase
         var requester = await CurrentUserAsync();
         if (requester is null) return Unauthorized();
 
-        if (string.IsNullOrEmpty(request.ProvisioningSecret) ||
-            request.ProvisioningSecret != _configuration["Provisioning:Secret"])
-        {
-            return StatusCode(403, new { message = "Provisioning rejected: invalid access credentials." });
-        }
-
         var user = await _userManager.FindByIdAsync(id);
         if (user is null) return NotFound();
         if (!CanAccessUser(requester, id, user.ManagedByAdminId, user.TenantId)) return StatusCode(403, new { message = "You are not allowed to provision this user." });

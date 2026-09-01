@@ -1,8 +1,10 @@
 ﻿using IMS.API.Models.ReportsDtos;
+using IMS.Core.Entities;
 using IMS.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace IMS.API.Controllers
 {
@@ -11,32 +13,50 @@ namespace IMS.API.Controllers
     [Authorize(Roles = "Admin,Manager")]
     public class ReportsController(ApplicationDbContext _context) : ControllerBase
     {
-
         [HttpGet]
-        public async Task<IActionResult> GetReport()
+        public async Task<IActionResult> GetReport([FromQuery] string? tenantId)
         {
+            var requesterId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (requesterId is null) return Unauthorized();
 
-            var totalStockValue = await _context.Products
+            var requester = await _context.Users.FirstOrDefaultAsync(u => u.Id == requesterId);
+            if (requester is null) return Unauthorized();
+
+            var isSuperAdmin = string.Equals(requester.Email, "MarioMedhat899@gmail.com", StringComparison.OrdinalIgnoreCase);
+            var effectiveTenantId = !string.IsNullOrWhiteSpace(tenantId) ? tenantId : requester.TenantId;
+
+            if (!isSuperAdmin && string.IsNullOrWhiteSpace(effectiveTenantId))
+            {
+                return BadRequest(new { message = "Tenant context is required for reporting." });
+            }
+
+            IQueryable<Product> productsQuery = _context.Products;
+            IQueryable<Transaction> transactionsQuery = _context.Transactions;
+
+            if (!isSuperAdmin && !string.IsNullOrWhiteSpace(effectiveTenantId))
+            {
+                transactionsQuery = transactionsQuery
+                    .Where(t => t.User != null && t.User.TenantId == effectiveTenantId);
+            }
+
+            var totalStockValue = await productsQuery
                 .SumAsync(p => p.Price * p.QuantityInStock);
 
-            var totalProducts = await _context.Products.CountAsync();
+            var totalProducts = await productsQuery.CountAsync();
 
-            var paymentsCount = await _context.Transactions
-           .CountAsync(t => t.Type == "payment");
-
-            var paymentsRevenue = await _context.Transactions
+            var paymentsCount = await transactionsQuery
+                .CountAsync(t => t.Type == "payment");
+            var paymentsRevenue = await transactionsQuery
                 .Where(t => t.Type == "payment")
                 .SumAsync(t => t.TotalAmount);
 
-            var receiptsCount = await _context.Transactions
+            var receiptsCount = await transactionsQuery
                 .CountAsync(t => t.Type == "receipt");
-
-
-            var receiptsAmount = await _context.Transactions
+            var receiptsAmount = await transactionsQuery
                 .Where(t => t.Type == "receipt")
                 .SumAsync(t => t.TotalAmount);
 
-            var topProducts = await _context.Transactions
+            var topProducts = await transactionsQuery
                 .Where(t => t.Type == "payment")
                 .GroupBy(t => new { t.ProductId, t.Product!.Name })
                 .Select(g => new TopProductDto
@@ -48,7 +68,6 @@ namespace IMS.API.Controllers
                 .OrderByDescending(t => t.QuantitySold)
                 .Take(5)
                 .ToListAsync();
-
 
             var report = new InventoryReportDto
             {
@@ -65,16 +84,9 @@ namespace IMS.API.Controllers
                     TotalAmount = receiptsAmount
                 },
                 TopSellingProducts = topProducts
-
-
-
-
-
             };
-
 
             return Ok(report);
         }
-
     }
 }

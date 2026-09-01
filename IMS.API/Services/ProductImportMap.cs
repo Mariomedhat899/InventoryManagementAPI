@@ -13,11 +13,9 @@ namespace IMS.API.Services
             Map(m => m.Name).Name("Name");
             Map(m => m.Description).Name("Description");
             Map(m => m.Price).Name("Price");
-            Map(m => m.QuantityInStock).Name("QuantityInStock");
+            Map(m => m.QuantityInStock).Name("QuantityInStock", "Stock");
             Map(m => m.Supplier).Name("Supplier");
-            Map(m => m.CategoryId).Name("CategoryId");
-            Map(m => m.CreatedAt).Ignore();
-            Map(m => m.LastUpdatedAt).Ignore();
+            Map(m => m.CategoryId).Name("CategoryId", "Category");
 
         }
     }
