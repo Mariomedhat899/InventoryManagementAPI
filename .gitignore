@@ -371,3 +371,4 @@ appsettings.json
 appsettings.*.json
 !appsettings.Development.json
 !appsettings.example.json
+-e "IMS.API/wwwroot/\nIMS.WebClient/" 
